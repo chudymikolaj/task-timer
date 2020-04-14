@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import FormNewTask from './FormNewTask';
 import TaskList from './TaskList';
+import TaskTimer from './TaskTimer';
 
 export default class TasksTable extends Component {
   constructor() {
@@ -27,6 +28,7 @@ export default class TasksTable extends Component {
       <React.Fragment>
         <FormNewTask task={this.handleNewTask} />
         <TaskList tasks={tasks} removeTask={this.removeTask} />
+        <TaskTimer />
       </React.Fragment>
     )
   }
