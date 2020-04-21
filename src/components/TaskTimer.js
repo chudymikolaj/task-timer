@@ -13,7 +13,6 @@ export default class TaskTimer extends Component {
       pausesCount: 0,
       startTime: null,
       endTime: null,
-      gettingTime: 20,
       elapsedTime: 0,
     }
   }
@@ -23,16 +22,20 @@ export default class TaskTimer extends Component {
   }
 
   render() {
-    const { isRunning, isPaused, pausesCount, startTime, endTime, gettingTime, elapsedTime } = this.state;
+    const { isRunning, isPaused, pausesCount, startTime, endTime, elapsedTime } = this.state;
+    const { title, time } = this.props;
+    const gettingTime = time * 60;
     const progressTime = gettingTime - elapsedTime;
     const getPercentProgressBar = ( elapsedTime / gettingTime ) * 100.0;
 
     return (
       <div className="TaskTimer">
+        <h2>{title}</h2>
+
         { startTime ? <p>{ `Started at -> ${startTime}`}</p> : null }
         { endTime ? <p> {`Ended at -> ${endTime}`} </p> : null }
         
-        <TaskTimeBox  progress={progressTime} />
+        <TaskTimeBox  progress={progressTime} paused={isPaused} />
         <ProgressBar percent={getPercentProgressBar} paused={isPaused} />
 
         <div>
@@ -46,22 +49,22 @@ export default class TaskTimer extends Component {
 
   startTimer = () => {
     console.log('timer');
+    const { time } = this.props;
+    const timeInSeconds = time * 60;
     
     this.timerId = window.setInterval(() => {
       this.setState( (prevState) => {
-        if(prevState.elapsedTime >= prevState.gettingTime){
-          this.stopTimer();
-        } 
-        
         return {
           elapsedTime: prevState.elapsedTime + 0.1
         }
+      }, () => {
+
+        if(this.state.elapsedTime >= timeInSeconds){
+          this.stopTimer();
+        }
+
       });
     }, 100);
-  }
-
-  stopTimer = () => {
-    window.clearInterval(this.timerId);
   }
 
   handleStart = () => {
@@ -72,15 +75,19 @@ export default class TaskTimer extends Component {
     this.startTimer();
   }
 
+  stopTimer = () => {
+    window.clearInterval(this.timerId);
+  }
+
   handleStop = () => {
+    this.stopTimer();
+
     this.setState(()=> ({
       isRunning: false,
       isPaused: false,
       elapsedTime: 0,
       pausesCount: 0
     }))
-
-    this.stopTimer();
   }
 
   togglePause = () => {
