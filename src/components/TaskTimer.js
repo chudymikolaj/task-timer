@@ -23,13 +23,13 @@ export default class TaskTimer extends Component {
 
   render() {
     const { isRunning, isPaused, pausesCount, startTime, endTime, elapsedTime } = this.state;
-    const { title, time } = this.props;
+    const { title, time, isEditable, onEdit } = this.props;
     const gettingTime = time * 60;
     const progressTime = gettingTime - elapsedTime;
     const getPercentProgressBar = ( elapsedTime / gettingTime ) * 100.0;
 
     return (
-      <div className="TaskTimer">
+      <div className={`TaskTimer ${isEditable ? 'inactive' : null}`}>
         <h2>{title}</h2>
 
         { startTime ? <p>{ `Started at -> ${startTime}`}</p> : null }
@@ -40,6 +40,7 @@ export default class TaskTimer extends Component {
 
         <div>
           <button className="btn" onClick={this.handleStart} disabled={isRunning}>Start</button>
+          <button className="btn" onClick={onEdit}  disabled={isEditable}>Edytuj</button>
           <button className="btn" onClick={this.handleStop}  disabled={!isRunning}>Stop</button>
           <button className="btn" onClick={this.togglePause} disabled={!isRunning}>{isPaused ? 'Wznów' : 'Pauza'} {pausesCount}</button>
         </div>

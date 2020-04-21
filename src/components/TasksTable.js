@@ -13,6 +13,7 @@ export default class TasksTable extends Component {
       title: 'Nauka React.js',
       time: '2',
       text: 'Od zera do bohatera!!!',
+      isEditable: true,
       tasks: [
         {
           'uuid': 'asdas',
@@ -26,7 +27,7 @@ export default class TasksTable extends Component {
 
 
   render() {
-    const { title, time, text, tasks } = this.state;
+    const { title, time, text, tasks, isEditable } = this.state;
 
     return (
       <React.Fragment>
@@ -34,15 +35,18 @@ export default class TasksTable extends Component {
           title={title} 
           time={time}
           text={text}
+          isEditable= {isEditable}
           onTitleChange={this.handleTitle}
           onTimeChange={this.handleTime}
           onTextChange={this.handleText}
-          onAddChange={this.handleSubmit}
+          onAddChange={this.handleConfirm}
         />
         <TaskList tasks={tasks} removeTask={this.removeTask} />
         <TaskTimer 
           title={title} 
           time={time}
+          isEditable={isEditable}
+          onEdit={this.handleEdit}
          />
       </React.Fragment>
     )
@@ -52,12 +56,20 @@ export default class TasksTable extends Component {
     this.setState({ title: e.target.value });
   }
 
+  handleTime = (e) => {
+    this.setState({ time: e.target.value });
+  }
+
   handleText = (e) => {
     this.setState({ text: e.target.value });
   }
-  
-  handleTime = (e) => {
-    this.setState({ time: e.target.value });
+ 
+  handleConfirm = () => {
+    this.setState({ isEditable: false })
+  }
+
+  handleEdit = () => {
+    this.setState({ isEditable: true })
   }
 
   handleSubmit = (e) => {
@@ -72,11 +84,11 @@ export default class TasksTable extends Component {
       time: this.state.time
     }
 
-    this.setState({
-      title: '', 
-      text: '',
-      time: ''
-    })
+    // this.setState({
+    //   title: '', 
+    //   text: '',
+    //   time: ''
+    // })
 
     this.setState({
       tasks: [ ...this.state.tasks, newTask]
