@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-import FormNewTask from './FormNewTask';
+import AddTask from './AddTask';
+import EditorTask from './EditorTask';
 import TaskList from './TaskList';
 import TaskTimer from './TaskTimer';
 
@@ -25,29 +26,54 @@ export default class TasksTable extends Component {
     }
   }
 
-
   render() {
     const { title, time, text, tasks, isEditable } = this.state;
 
     return (
       <React.Fragment>
-        <FormNewTask 
-          title={title} 
-          time={time}
-          text={text}
-          isEditable= {isEditable}
+        <AddTask 
           onTitleChange={this.handleTitle}
           onTimeChange={this.handleTime}
           onTextChange={this.handleText}
-          onAddChange={this.handleConfirm}
+          onAddTask={this.handleSubmit}
         />
-        <TaskList tasks={tasks} removeTask={this.removeTask} />
-        <TaskTimer 
-          title={title} 
-          time={time}
-          isEditable={isEditable}
-          onEdit={this.handleEdit}
-         />
+
+        <ul className="TaskList">
+          {tasks.map( task => (
+            <TaskList 
+              key={task.uuid}
+              title={task.title} 
+              text={task.text}
+              time={task.time}
+              onStart={null}
+              onUpdate={(e) => { this.updateTask(task.uuid, { ...tasks, uuid: uuidv4(), title: 'Zmieniono', text: "Nauka aktualizowania listy w react.js", time: "120"}) }} 
+              onRemove={(e) => { this.removeTask(task.uuid) }} 
+            />
+          ))}
+        </ul>
+
+        
+        {false ?  
+          <>
+            <EditorTask 
+              title={title} 
+              time={time}
+              text={text}
+              isEditable= {isEditable}
+              onTitleChange={this.handleTitle}
+              onTimeChange={this.handleTime}
+              onTextChange={this.handleText}
+              onAddChange={this.handleConfirm}
+            />
+            <TaskTimer 
+              title={title} 
+              time={time}
+              isEditable={isEditable}
+              onEdit={this.handleEdit}
+            />
+          </>
+        : null} 
+        
       </React.Fragment>
     )
   }
@@ -84,23 +110,32 @@ export default class TasksTable extends Component {
       time: this.state.time
     }
 
-    // this.setState({
-    //   title: '', 
-    //   text: '',
-    //   time: ''
-    // })
-
     this.setState({
-      tasks: [ ...this.state.tasks, newTask]
+      title: '', 
+      text: '',
+      time: ''
+    })
+
+    this.setState( prevState => {
+      const tasks = [ ...prevState.tasks, newTask]
+      return { tasks };
     })
   }
 
-  removeTask = (index) => {
-    const tasks = this.state.tasks.filter((tasks) => {
-      return tasks.uuid !== index
-    });
+  updateTask = (indexToUpdate, updatedTask) => {
+    this.setState( prevState => {
+      const tasks = prevState.tasks.map( task => task.uuid === indexToUpdate ? updatedTask : task)
 
-    this.setState({tasks})
+      return { tasks };
+    })
+  }
+
+  removeTask = (indexToRemove) => {
+    this.setState( prevState => {
+      const tasks = prevState.tasks.filter((task) => task.uuid !== indexToRemove);
+      
+      return { tasks };
+    });
   }
 
 }

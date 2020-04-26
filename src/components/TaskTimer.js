@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import ProgressBar from './ProgresBar';
-import TaskTimeBox from './TaskTimeBox';
+import TaskTimeName from './TaskTimeName';
 
 export default class TaskTimer extends Component {
   constructor(props) {
@@ -35,7 +35,7 @@ export default class TaskTimer extends Component {
         { startTime ? <p>{ `Started at -> ${startTime}`}</p> : null }
         { endTime ? <p> {`Ended at -> ${endTime}`} </p> : null }
         
-        <TaskTimeBox  progress={progressTime} paused={isPaused} />
+        <TaskTimeName  progress={progressTime} paused={isPaused} />
         <ProgressBar percent={getPercentProgressBar} paused={isPaused} />
 
         <div>
