@@ -13,7 +13,7 @@ const TaskList = props => {
   return (    
     <li className="TaskList__task">
       <div className="TaskList__task__column">
-        <h5 className="TaskList__task__title">Tytuł: {title}</h5>
+        <h5 className="TaskList__task__title">{title}</h5>
         <p className="TaskList__task__description">Czas: {time} min</p>
         <p className="TaskList__task__description">Opis: {text}</p>
       </div>

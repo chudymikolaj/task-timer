@@ -11,30 +11,28 @@ export default class TasksTable extends Component {
     super(props);
 
     this.state = {
-      title: 'Nauka React.js',
-      time: '2',
-      text: 'Od zera do bohatera!!!',
-      isEditable: true,
+      taskIndex: '',
+      title: '',
+      time: '',
+      text: '',
+      isEditable: false,
       tasks: [
         {
-          'uuid': 'asdas',
-          'title': 'Tytuł 1',
-          'text': 'lorem',
-          'time': '1h'
+          'uuid': uuidv4(),
+          'title': 'Nauka React.js',
+          'text': 'Od zera do bohatera!!!',
+          'time': '2'
         }
       ]
     }
   }
 
   render() {
-    const { title, time, text, tasks, isEditable } = this.state;
+    const { title, time, text, tasks, isEditable, taskIndex } = this.state;
 
     return (
       <React.Fragment>
         <AddTask 
-          onTitleChange={this.handleTitle}
-          onTimeChange={this.handleTime}
-          onTextChange={this.handleText}
           onAddTask={this.handleSubmit}
         />
 
@@ -45,86 +43,65 @@ export default class TasksTable extends Component {
               title={task.title} 
               text={task.text}
               time={task.time}
-              onStart={null}
-              onUpdate={(e) => { this.updateTask(task.uuid, { ...tasks, uuid: uuidv4(), title: 'Zmieniono', text: "Nauka aktualizowania listy w react.js", time: "120"}) }} 
-              onRemove={(e) => { this.removeTask(task.uuid) }} 
+              onStart={(e) => { this.handleStartTask({taskIndex: task.uuid, title: task.title, time: task.time, text: task.text}) }}
+              onUpdate={(e) => { this.editTask(task.uuid) }} 
+              onRemove={(e) => { this.removeTask(task.uuid) }}
             />
           ))}
         </ul>
 
         
-        {false ?  
-          <>
-            <EditorTask 
-              title={title} 
-              time={time}
-              text={text}
-              isEditable= {isEditable}
-              onTitleChange={this.handleTitle}
-              onTimeChange={this.handleTime}
-              onTextChange={this.handleText}
-              onAddChange={this.handleConfirm}
-            />
-            <TaskTimer 
-              title={title} 
-              time={time}
-              isEditable={isEditable}
-              onEdit={this.handleEdit}
-            />
-          </>
-        : null} 
-        
+        {isEditable ?
+          <EditorTask
+            title={title}
+            time={time}
+            text={text}
+            isEditable= {isEditable}
+            onChangeTask={this.handleConfirm}
+          />
+        :
+          <TaskTimer
+            taskIndex={taskIndex}
+            title={title}
+            time={time}
+            isEditable={isEditable}
+            onEdit={this.handleEdit}
+          />
+        }
       </React.Fragment>
     )
   }
 
-  handleTitle = (e) => {
-    this.setState({ title: e.target.value });
+  handleStartTask = (handleTaskData) => {
+    this.setState(handleTaskData);
   }
 
-  handleTime = (e) => {
-    this.setState({ time: e.target.value });
-  }
+  handleConfirm = (editedTask) => {
+    this.setState({ isEditable: false });
 
-  handleText = (e) => {
-    this.setState({ text: e.target.value });
-  }
- 
-  handleConfirm = () => {
-    this.setState({ isEditable: false })
-  }
-
-  handleEdit = () => {
-    this.setState({ isEditable: true })
-  }
-
-  handleSubmit = (e) => {
-    e.preventDefault();
-
-    if( this.state.title.length === 0 || this.state.text.length === 0 || this.state.time.length === 0 ) return;
-
-    const newTask = {
-      uuid: uuidv4(),
-      title: this.state.title, 
-      text: this.state.text,
-      time: this.state.time
+    if(this.state.taskIndex.length) {
+      this.updateTask( this.state.taskIndex, editedTask);
     }
+  }
 
-    this.setState({
-      title: '', 
-      text: '',
-      time: ''
-    })
+  handleEdit = (isEditable) => {
+    this.setState(isEditable);
+  }
 
+  handleSubmit = (createTask) => {
     this.setState( prevState => {
-      const tasks = [ ...prevState.tasks, newTask]
+      const tasks = [ ...prevState.tasks, createTask];
       return { tasks };
     })
   }
 
-  updateTask = (indexToUpdate, updatedTask) => {
+  editTask = (taskIndex) => {
+    this.setState({ taskIndex: taskIndex, isEditable: true });
+  }
+
+  updateTask = (taskIndex, updatedTask) => {
     this.setState( prevState => {
-      const tasks = prevState.tasks.map( task => task.uuid === indexToUpdate ? updatedTask : task)
+      const tasks = prevState.tasks.map( task => task.uuid === taskIndex ? updatedTask : task);
 
       return { tasks };
     })
